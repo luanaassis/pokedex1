@@ -1,4 +1,4 @@
-package br.ifmg.edu.bsi.progmovel.pokedex1.apimodel;
+package br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Pokemon;
 
 public class Pokemon {
     public String name;
@@ -6,4 +6,7 @@ public class Pokemon {
     public int weight;
     public int id;
     public Sprites sprites;
+
+    public Species species;
+
 }

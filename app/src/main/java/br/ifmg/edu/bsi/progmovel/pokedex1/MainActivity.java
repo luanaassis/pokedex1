@@ -1,6 +1,7 @@
 package br.ifmg.edu.bsi.progmovel.pokedex1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,4 +25,5 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(VerPokemonActivity.EXTRA_NOME_POKEMON, binding.editText.getText().toString());
         startActivity(intent);
     }
+
 }

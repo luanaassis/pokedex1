@@ -39,13 +39,14 @@ public class VerPokemonActivity extends AppCompatActivity {
                 (newV) -> Picasso.get().load(newV).into(binding.imageView));
         vm.getHeight().observe(this, (altura) -> binding.tvAltura.setText("" + altura));
         vm.getWeight().observe(this, (peso) -> binding.tvPeso.setText("" + peso));
-
+        vm.getEvolucoes().observe(this, (evolucoes) -> binding.textView4.setText("" + evolucoes));
         // Aqui, eu recebo da activity anterior o nome do pokemon
         Intent intent = getIntent();
         String nomePokemon = "charmander";
         if (intent != null && intent.getStringExtra(EXTRA_NOME_POKEMON) != null) {
             nomePokemon = intent.getStringExtra(EXTRA_NOME_POKEMON);
         }
+
 
         // Bora carregar o monstro.
         vm.loadPokemon(nomePokemon);

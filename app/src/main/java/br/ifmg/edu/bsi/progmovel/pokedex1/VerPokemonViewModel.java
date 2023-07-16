@@ -2,6 +2,7 @@ package br.ifmg.edu.bsi.progmovel.pokedex1;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.lifecycle.LiveData;
@@ -11,10 +12,10 @@ import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.io.IOException;
 
-import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Pokeapi;
-import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Pokemon;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Evolution.Evolution;
+import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Evolution.PokemonEvolution;
+import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Pokemon.Pokemon;
+import br.ifmg.edu.bsi.progmovel.pokedex1.apimodel.Species.PokemonSpecies;
 
 public class VerPokemonViewModel extends ViewModel {
     private PokedexApplication app;
@@ -24,10 +25,11 @@ public class VerPokemonViewModel extends ViewModel {
     private MutableLiveData<Integer> height;
     private MutableLiveData<Integer> weight;
 
+    private MutableLiveData<String> evolucoes;
+
     public static ViewModelInitializer<VerPokemonViewModel> initializer = new ViewModelInitializer<>(
             VerPokemonViewModel.class,
             creationExtras -> new VerPokemonViewModel((PokedexApplication) creationExtras.get(APPLICATION_KEY)));
-
     public VerPokemonViewModel(PokedexApplication app) {
         this.app = app;
         loading = new MutableLiveData<>(View.GONE);
@@ -35,6 +37,7 @@ public class VerPokemonViewModel extends ViewModel {
         urlImagem = new MutableLiveData<>();
         height = new MutableLiveData<>();
         weight = new MutableLiveData<>();
+        evolucoes =  new MutableLiveData<>();
     }
 
     public void loadPokemon(String nomePokemon) {
@@ -47,6 +50,24 @@ public class VerPokemonViewModel extends ViewModel {
                 height.postValue(p.height);
                 weight.postValue(p.weight);
                 urlImagem.postValue(p.sprites.other.officialArtwork.front_default);
+                String[] urlPokemon = p.species.url.split("/");
+                int idEspecie = Integer.parseInt(urlPokemon[urlPokemon.length - 1]);
+                Log.d("Especie", String.valueOf(idEspecie));
+                PokemonSpecies especiePokemon = app.getPokemonRepo().buscaEspecie(idEspecie);
+                String[] urlEspecie = especiePokemon.evolutionChain.url.split("/");
+                int idEvolucao = Integer.parseInt(urlEspecie[urlEspecie.length - 1]);
+                Log.d("Evolucao", String.valueOf(idEvolucao));
+                PokemonEvolution evolucaoPokemon = app.getPokemonRepo().buscaEvolucao(idEvolucao);
+                Evolution[] evo = evolucaoPokemon.chain.evolves_to;
+                String nomesEvoluções = "";
+                for (int i =0; i<evo.length;i++) {
+                    nomesEvoluções+=("- "+evo[i].species.name + "\n");
+                    for(Evolution evo2 : evo[i].evolves_to){
+                        nomesEvoluções+=("- "+ evo2.species.name + "\n");
+                    }
+                }
+                Log.d("Nome evolucao",nomesEvoluções);
+                evolucoes.postValue(nomesEvoluções);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -74,4 +95,9 @@ public class VerPokemonViewModel extends ViewModel {
     public LiveData<Integer> getWeight() {
         return weight;
     }
+
+    public LiveData<String> getEvolucoes() {
+        return evolucoes;
+    }
+
 }
